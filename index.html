@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞萬回饋</title>
+    <title>亞萬回饋快速試算器</title>
     <style>
         :root {
             /* 質感調色盤 - 冷暖對比版 */
@@ -107,6 +107,21 @@
             background-color: var(--accent-color);
             margin-right: 10px;
             border-radius: 3px;
+        }
+        .bank-title a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .bank-title a:hover {
+            color: var(--highlight-text);
+        }
+        .bank-time {
+            margin-left: auto; /* 自動將時間推到最右側 */
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: var(--text-muted);
+            letter-spacing: 0;
         }
 
         /* 卡片式排版 */
@@ -217,6 +232,9 @@
                 width: 100%;
                 max-width: 300px;
             }
+            .bank-time {
+                font-size: 0.75rem; /* 手機版時間字體縮小避免換行太擁擠 */
+            }
         }
     </style>
 </head>
@@ -248,12 +266,31 @@
     <script>
         let showAllRows = false;
 
-        // 加入 splitRates 陣列，專門處理需要分開計算再加總的複合回饋
+        // 定義各銀行專屬的網址與活動時間
+        const bankDetails = {
+            '台新': {
+                url: 'https://mkp.taishinbank.com.tw/TsCms/marketing/expose/WM_20251216135929999/index.html?utm_source=google&utm_medium=pmax&utm_campaign=cc_20251216135929999&utm_content=digital&gad_source=1&gad_campaignid=22091010688&gbraid=0AAAAABhSXuQeUDS8W93tc-9Urof6W-_5W&gclid=CjwKCAjwqJXUBhBNEiwA8BgG7tCEF4XUi3BrfpAr1sOsrZYEpt3RDLUfJQBxYxnwxEU9to_69eMJ-hoCjkUQAvD_BwE',
+                time: '~2027/03/31'
+            },
+            '玉山': {
+                url: 'https://event.esunbank.com.tw/credit/unicard-b/discount-channel.html',
+                time: '~2026/12/31'
+            },
+            '國泰': {
+                url: 'https://www.cathay-cube.com.tw/cathaybk/personal/product/credit-card/cards/cube-list',
+                time: '~2026/12/31'
+            },
+            '匯豐': {
+                url: 'https://www.beurlife.com/2024/07/hsbc-live-plus-credit-card.html#google_vignette',
+                time: '~2026/09/30'
+            }
+        };
+
         const cardData = [
             // 台新 (皆為無條件捨去)
-            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月', isMain: false },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月活動至9/30', isMain: false },
             { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
-            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼至9/30', isMain: true },
             { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
             { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
 
@@ -265,8 +302,8 @@
             // 國泰
             { bank: '國泰', card: 'Cube (四捨五入)', condition: '集精選 2.0%', rate: 0.02, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
             { bank: '國泰', card: 'Cube (四捨五入)', condition: '其餘權益 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
-            { bank: '國泰', card: 'Cube (四捨五入)', condition: '特定加碼 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
-            { bank: '國泰', card: 'Cube (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '特定加碼 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '領券加碼', isMain: false },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '領券加碼', isMain: false },
 
             // 匯豐
             { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般消費 0.88%', rate: 0.0088, roundType: 'round', milesPerPoint: 2, limit: '無', isMain: false },
@@ -303,9 +340,14 @@
                 if (card.bank !== currentBank) {
                     currentBank = card.bank;
                     
+                    const info = bankDetails[currentBank] || { url: '#', time: '' };
+
                     const bankTitle = document.createElement('div');
                     bankTitle.className = 'bank-title';
-                    bankTitle.innerText = `${currentBank}銀行`;
+                    bankTitle.innerHTML = `
+                        <a href="${info.url}" target="_blank" title="前往活動官網">${currentBank}銀行 🔗</a>
+                        <span class="bank-time">活動時間：${info.time}</span>
+                    `;
                     container.appendChild(bankTitle);
 
                     const desktopHeader = document.createElement('div');
