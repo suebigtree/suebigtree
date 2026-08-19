@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亞萬回饋</title>
+    <style>
+        :root {
+            /* 質感調色盤 - 冷暖對比版 */
+            --bg-color: #e8ecef;          
+            --text-main: #3a4750;         
+            --text-muted: #8391a1;        
+            --accent-color: #c4a77d;      
+            --highlight-bg: #f7efe4;      
+            --highlight-text: #427288;    
+            --border-color: #dbe1e6;      
+            --card-bg: #ffffff;           
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            line-height: 1.6;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            margin-bottom: 40px;
+        }
+
+        /* 輸入區塊極簡化 */
+        .input-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-label {
+            display: block;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+        input[type="number"] {
+            font-size: 1.5rem;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-color);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type="number"]:focus {
+            border-bottom: 2px solid var(--text-main);
+        }
+
+        /* 工具列與按鈕 */
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .btn-toggle {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--text-main);
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-toggle:hover {
+            background-color: var(--text-main);
+            color: var(--card-bg);
+        }
+
+        /* 銀行區塊標題 */
+        .bank-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin: 40px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            letter-spacing: 1px;
+        }
+        .bank-title::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 18px;
+            background-color: var(--accent-color);
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+
+        /* 卡片式排版 */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+        }
+        .card-item {
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); 
+        }
+        .card-item:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .card-item.main-row {
+            background-color: var(--highlight-bg);
+            border: 1px solid #ebd7be;
+            border-left: 6px solid var(--accent-color);
+        }
+
+        .card-item.secondary-row {
+            background-color: var(--card-bg);
+            border: 1px dashed #c2c9d1;
+            border-left: 6px solid #c2c9d1;
+            opacity: 0.95;
+        }
+
+        .card-col {
+            font-size: 0.95rem;
+        }
+        .mobile-label {
+            display: none; 
+        }
+        .val-highlight {
+            color: var(--highlight-text);
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+        .val-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* 備註說明區 */
+        .notes-section {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .notes-section ul {
+            padding-left: 20px;
+        }
+
+        /* 電腦版表頭 */
+        .desktop-header {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px 10px 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        /* 手機版響應式設計 */
+        @media (max-width: 768px) {
+            .desktop-header { display: none; }
+            .card-item {
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                gap: 12px;
+            }
+            .card-col {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px dashed var(--border-color);
+                padding-bottom: 8px;
+            }
+            .card-col:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+            .mobile-label {
+                display: block; 
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                font-weight: bold;
+            }
+            .card-col > span:last-child {
+                text-align: right;
+            }
+            input[type="number"] {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>日常飛行試算</h2>
+    
+    <div class="input-section">
+        <label class="input-label" for="amount">預計消費金額 (NTD)</label>
+        <input type="number" id="amount" placeholder="0" min="0" oninput="calculateMiles()">
+    </div>
+
+    <div class="toolbar">
+        <button id="toggleBtn" class="btn-toggle" onclick="toggleRows()">展開完整明細</button>
+    </div>
+
+    <div id="resultContainer"></div>
+
+    <div class="notes-section">
+        <p>📝 <strong>試算筆記：</strong></p>
+        <ul>
+            <li>預設僅顯示「重點推薦組合」，點擊右上角按鈕可查看各項加碼拆解明細。</li>
+            <li>「獲得點數」支援**分段計算邏輯**：如標示為「相加」的回饋，系統會自動將各%數分開計算進位/捨去後再行加總，與銀行實際計算方式相符。</li>
+            <li>兌換門檻依各銀行官方規定為主（如：台新需滿10點、國泰需滿360點）。本系統顯示之「等值里數」為依比例換算之理論值，便於跨行比較。</li>
+            <li>平均「元/哩」若顯示為「-」，代表消費金額過低，尚未達到獲得點數的最低門檻。</li>
+        </ul>
+    </div>
+
+    <script>
+        let showAllRows = false;
+
+        // 加入 splitRates 陣列，專門處理需要分開計算再加總的複合回饋
+        const cardData = [
+            // 台新 (皆為無條件捨去)
+            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月', isMain: false },
+            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
+            { bank: '台新', card: '太陽玫瑰卡 (分開無條件捨去)', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼', isMain: true },
+            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
+            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
+
+            // 玉山
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '自扣+電子 1.0%', rate: 0.01, roundType: 'round', milesPerPoint: 1.5, limit: '無', isMain: false },
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '任意選8家 2.5%', rate: 0.025, roundType: 'round', milesPerPoint: 1.5, limit: '1,000/月', isMain: false },
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '任意選合計 3.5%', rate: 0.035, splitRates: [0.01, 0.025], roundType: 'round', milesPerPoint: 1.5, limit: '含加碼', isMain: true },
+
+            // 國泰
+            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '集精選 2.0%', rate: 0.02, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
+            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '其餘權益 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
+            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '特定加碼 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
+            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
+
+            // 匯豐
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般消費 0.88%', rate: 0.0088, roundType: 'round', milesPerPoint: 2, limit: '無', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '帳戶自扣 1.0%', rate: 0.01, roundType: 'round', milesPerPoint: 2, limit: '200/月', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般消費合計 1.88%', rate: 0.0188, splitRates: [0.0088, 0.01], roundType: 'round', milesPerPoint: 2, limit: '含自扣', isMain: true },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '餐飲/購物/娛樂 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 2, limit: '888/月', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '三大通路合計 4.88%', rate: 0.0488, splitRates: [0.0088, 0.01, 0.03], roundType: 'round', milesPerPoint: 2, limit: '含各項上限', isMain: true },
+        ];
+
+        function toggleRows() {
+            showAllRows = !showAllRows;
+            const btn = document.getElementById('toggleBtn');
+            btn.innerText = showAllRows ? '收合明細' : '展開完整明細';
+            calculateMiles(); 
+        }
+
+        function calculateMiles() {
+            const amountInput = document.getElementById('amount').value;
+            const amount = parseFloat(amountInput) || 0;
+            const container = document.getElementById('resultContainer');
+            container.innerHTML = '';
+
+            if (amount === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:#8391a1;">請於上方輸入金額開始試算</div>';
+                return;
+            }
+
+            let currentBank = '';
+            let currentList = null;
+
+            cardData.forEach(card => {
+                if (!showAllRows && !card.isMain) return;
+
+                if (card.bank !== currentBank) {
+                    currentBank = card.bank;
+                    
+                    const bankTitle = document.createElement('div');
+                    bankTitle.className = 'bank-title';
+                    bankTitle.innerText = `${currentBank}銀行`;
+                    container.appendChild(bankTitle);
+
+                    const desktopHeader = document.createElement('div');
+                    desktopHeader.className = 'desktop-header';
+                    desktopHeader.innerHTML = `
+                        <div>卡別與規則</div>
+                        <div>消費條件</div>
+                        <div>獲得點數</div>
+                        <div>等值里數</div>
+                        <div>平均(元/哩)</div>
+                        <div>備註</div>
+                    `;
+                    container.appendChild(desktopHeader);
+
+                    currentList = document.createElement('div');
+                    currentList.className = 'card-list';
+                    container.appendChild(currentList);
+                }
+
+                // 計算邏輯：判斷是否有分段計算需求
+                let points = 0;
+                if (card.splitRates) {
+                    card.splitRates.forEach(rate => {
+                        if (card.roundType === 'floor') {
+                            points += Math.floor(amount * rate);
+                        } else if (card.roundType === 'round') {
+                            points += Math.round(amount * rate);
+                        }
+                    });
+                } else {
+                    if (card.roundType === 'floor') {
+                        points = Math.floor(amount * card.rate);
+                    } else if (card.roundType === 'round') {
+                        points = Math.round(amount * card.rate);
+                    }
+                }
+
+                const miles = points * card.milesPerPoint;
+                let costPerMile = '-';
+                if (miles > 0) costPerMile = (amount / miles).toFixed(2);
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `card-item ${card.isMain ? 'main-row' : 'secondary-row'}`;
+                
+                cardEl.innerHTML = `
+                    <div class="card-col">
+                        <span class="mobile-label">卡別</span>
+                        <span>${card.card}</span>
+                    </div>
+                    <div class="card-col">
+                        <span class="mobile-label">條件</span>
+                        <span>${card.condition}</span>
+                    </div>
+                    <div class="card-col">
+                        <span class="mobile-label">獲得點數</span>
+                        <span class="val-highlight">${points.toLocaleString()} 點</span>
+                    </div>
+                    <div class="card-col">
+                        <span class="mobile-label">等值里數</span>
+                        <span class="val-highlight">${Math.floor(miles).toLocaleString()} 哩</span>
+                    </div>
+                    <div class="card-col">
+                        <span class="mobile-label">元/哩</span>
+                        <span>${costPerMile}</span>
+                    </div>
+                    <div class="card-col">
+                        <span class="mobile-label">備註</span>
+                        <span class="val-note">${card.limit}</span>
+                    </div>
+                `;
+                currentList.appendChild(cardEl);
+            });
+        }
+
+        calculateMiles();
+    </script>
+</body>
+</html>
