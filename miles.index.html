@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亞萬回饋快速試算器</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .input-group {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        input[type="number"] {
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 200px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            outline: none;
+        }
+        .toolbar {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .toggle-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle-btn:hover {
+            background-color: #1a252f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 14px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            white-space: nowrap;
+            font-size: 1.05rem;
+        }
+        /* 銀行區塊標題列 */
+        .bank-divider {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.15rem;
+            text-align: left !important;
+            border-top: 4px solid #2c3e50; /* 粗頂部邊界加強區隔 */
+            letter-spacing: 1px;
+        }
+        .bank-divider td {
+            padding-left: 20px;
+        }
+        /* 黃底主要回饋列的樣式 */
+        .main-row {
+            background-color: #fffde7;
+            font-weight: 500;
+        }
+        /* 次要隱藏列的樣式 */
+        .secondary-row {
+            background-color: #ffffff;
+            color: #666;
+        }
+        tr:hover {
+            filter: brightness(0.96);
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .notes {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>✈️ 亞萬里數回饋快速試算器</h2>
+    
+    <div class="input-group">
+        <label for="amount" style="font-size: 1.2rem; font-weight: bold;">請輸入預計刷卡金額 (台幣)：</label><br><br>
+        <input type="number" id="amount" placeholder="例如：10000" min="0" oninput="calculateMiles()">
+    </div>
+
+    <div class="toolbar">
+        <button id="toggleBtn" class="toggle-btn" onclick="toggleRows()">展開其他細項回饋 ▼</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>銀行</th>
+                <th>卡別 (小數點規則)</th>
+                <th>消費條件 / 回饋%</th>
+                <th>獲得點數</th>
+                <th>等值里數</th>
+                <th>平均 元/哩</th>
+                <th>加碼上限備註</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+            <!-- 試算結果會透過 JavaScript 動態生成在這裡 -->
+        </tbody>
+    </table>
+
+    <div class="notes">
+        <p><strong>備註說明：</strong></p>
+        <ul>
+            <li>預設僅顯示表格中標註為「黃底」的重點組合回饋，可點擊右上方按鈕展開各項拆解明細。</li>
+            <li>此試算工具根據您提供的圖片邏輯製作，各家銀行的點數兌換門檻（如每次需滿 10點 或 360點 才能換）依官方規定為主，此處「等值里數」為按比例之理論值，方便您快速比較。</li>
+            <li>「獲得點數」的計算已套用圖片中的進位邏輯：台新為無條件捨去，玉山、國泰、匯豐為四捨五入。</li>
+            <li>平均「元/哩」若顯示為 0 則代表該消費金額未達獲得最低點數的門檻。</li>
+        </ul>
+    </div>
+
+    <script>
+        // 控制是否顯示所有列的變數
+        let showAllRows = false;
+
+        // isMain: true 代表是圖片中的黃底欄位
+        const cardData = [
+            // 台新 (10點換18哩 = 1點1.8哩)
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月', isMain: false },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '', isMain: false },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay 3.8% 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '', isMain: true },
+
+            // 玉山 (200點換300哩 = 1點1.5哩)
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '自扣+電子 1.0%', rate: 0.01, roundType: 'round', milesPerPoint: 1.5, limit: '', isMain: false },
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '任意選8家 2.5%', rate: 0.025, roundType: 'round', milesPerPoint: 1.5, limit: '1,000/月', isMain: false },
+            { bank: '玉山', card: 'Unicard (四捨五入)', condition: '任意選 合計 3.5%', rate: 0.035, roundType: 'round', milesPerPoint: 1.5, limit: '含加碼', isMain: true },
+
+            // 國泰 (360點換1000哩 = 1點約2.777哩)
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '集精選 2.0%', rate: 0.02, roundType: 'round', milesPerPoint: 1000/360, limit: '', isMain: true },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '其餘權益 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 1000/360, limit: '', isMain: true },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '方案 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '', isMain: false },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '', isMain: false },
+
+            // 匯豐 (1點換2哩 = 1點2哩)
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般 0.88%', rate: 0.0088, roundType: 'round', milesPerPoint: 2, limit: '', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '自扣 1.0%', rate: 0.01, roundType: 'round', milesPerPoint: 2, limit: '200/月', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般消費合計 1.88%', rate: 0.0188, roundType: 'round', milesPerPoint: 2, limit: '含自扣', isMain: true },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '餐飲/購物/娛樂 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 2, limit: '888/月', isMain: false },
+            { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '餐飲/購物/娛樂 合計 4.88%', rate: 0.0488, roundType: 'round', milesPerPoint: 2, limit: '含各項上限', isMain: true },
+        ];
+
+        function toggleRows() {
+            showAllRows = !showAllRows;
+            const btn = document.getElementById('toggleBtn');
+            btn.innerText = showAllRows ? '收合其他細項回饋 ▲' : '展開其他細項回饋 ▼';
+            calculateMiles(); // 切換狀態後重新渲染表格
+        }
+
+        function calculateMiles() {
+            const amountInput = document.getElementById('amount').value;
+            const amount = parseFloat(amountInput) || 0;
+            const tbody = document.getElementById('resultBody');
+            tbody.innerHTML = '';
+
+            if (amount === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">請於上方輸入金額以查看試算結果。</td></tr>';
+                return;
+            }
+
+            let currentBank = '';
+
+            cardData.forEach(card => {
+                // 如果是隱藏狀態，且該列不是主要(黃底)欄位，則跳過不處理
+                if (!showAllRows && !card.isMain) {
+                    return;
+                }
+
+                // 判斷是否進入新的銀行區塊，若是則插入分隔標題列
+                if (card.bank !== currentBank) {
+                    currentBank = card.bank;
+                    const dividerTr = document.createElement('tr');
+                    dividerTr.className = 'bank-divider';
+                    dividerTr.innerHTML = `<td colspan="7">🏦 ${currentBank}銀行</td>`;
+                    tbody.appendChild(dividerTr);
+                }
+
+                // 計算點數
+                let points = 0;
+                if (card.roundType === 'floor') {
+                    points = Math.floor(amount * card.rate);
+                } else if (card.roundType === 'round') {
+                    points = Math.round(amount * card.rate);
+                }
+
+                // 計算里數
+                const miles = points * card.milesPerPoint;
+                
+                // 計算平均 元/哩
+                let costPerMile = '-';
+                if (miles > 0) {
+                    costPerMile = (amount / miles).toFixed(2);
+                }
+
+                // 建立一般資料列
+                const tr = document.createElement('tr');
+                
+                // 依據是否為主要欄位賦予不同的 CSS Class
+                tr.className = card.isMain ? 'main-row' : 'secondary-row';
+
+                tr.innerHTML = `
+                    <td style="color: #7f8c8d;">${card.bank}</td>
+                    <td>${card.card}</td>
+                    <td>${card.condition}</td>
+                    <td class="highlight">${points.toLocaleString()} 點</td>
+                    <td class="highlight">${Math.floor(miles).toLocaleString()} 哩</td>
+                    <td>${costPerMile}</td>
+                    <td style="font-size: 0.85em;">${card.limit}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 初始載入時顯示空狀態提示
+        calculateMiles();
+    </script>
+</body>
+</html>
