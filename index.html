@@ -251,11 +251,11 @@
         // 加入 splitRates 陣列，專門處理需要分開計算再加總的複合回饋
         const cardData = [
             // 台新 (皆為無條件捨去)
-            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月', isMain: false },
-            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
-            { bank: '台新', card: '太陽玫瑰卡 (分開無條件捨去)', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼', isMain: true },
-            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
-            { bank: '台新', card: '太陽玫瑰卡 (無條件捨去)', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月', isMain: false },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
+            { bank: '台新', card: '太陽玫瑰 (無條件捨去)', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
 
             // 玉山
             { bank: '玉山', card: 'Unicard (四捨五入)', condition: '自扣+電子 1.0%', rate: 0.01, roundType: 'round', milesPerPoint: 1.5, limit: '無', isMain: false },
@@ -263,10 +263,10 @@
             { bank: '玉山', card: 'Unicard (四捨五入)', condition: '任意選合計 3.5%', rate: 0.035, splitRates: [0.01, 0.025], roundType: 'round', milesPerPoint: 1.5, limit: '含加碼', isMain: true },
 
             // 國泰
-            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '集精選 2.0%', rate: 0.02, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
-            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '其餘權益 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
-            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '特定加碼 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
-            { bank: '國泰', card: 'Cube卡 (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '集精選 2.0%', rate: 0.02, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '其餘權益 3.0%', rate: 0.03, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: true },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '特定加碼 4.0%', rate: 0.04, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
+            { bank: '國泰', card: 'Cube (四捨五入)', condition: '屈臣氏 5.0%', rate: 0.05, roundType: 'round', milesPerPoint: 1000/360, limit: '無', isMain: false },
 
             // 匯豐
             { bank: '匯豐', card: 'Live+ (四捨五入)', condition: '一般消費 0.88%', rate: 0.0088, roundType: 'round', milesPerPoint: 2, limit: '無', isMain: false },
