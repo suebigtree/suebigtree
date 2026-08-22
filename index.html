@@ -23,7 +23,7 @@
             font-family: 'Noto Sans TC', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            max-width: 960px; /* 微調寬度讓版面更大氣 */
+            max-width: 960px;
             margin: 0 auto;
             padding: 50px 20px;
             line-height: 1.8;
@@ -148,16 +148,14 @@
             border-radius: 8px;
             padding: 22px 24px;
             display: grid;
-            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            grid-template-columns: 2fr 2.5fr 1.5fr 1.5fr 1fr 1fr; /* 微調欄寬給條件標籤 */
             align-items: center;
             gap: 15px;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* 更強烈、更立體的雙層陰影，讓卡片明顯凸出 */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.03); 
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
         .card-item:hover {
-            /* 懸浮時進一步放大陰影與上浮 */
             box-shadow: 0 15px 40px rgba(29, 29, 27, 0.08), 0 4px 12px rgba(181, 141, 61, 0.08);
             transform: translateY(-4px);
         }
@@ -181,6 +179,36 @@
         .mobile-label {
             display: none; 
         }
+
+        /* ====== 新增：條件精品標籤 (Badge) ====== */
+        .condition-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-align: center;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        /* 重點推薦（主卡片）的條件標籤：奢華實心金底 */
+        .main-row .condition-badge {
+            background: linear-gradient(135deg, #c49d47, var(--accent-color));
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(181, 141, 61, 0.25);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid transparent;
+        }
+
+        /* 展開細項（次卡片）的條件標籤：優雅鏤空金線 */
+        .secondary-row .condition-badge {
+            background-color: rgba(181, 141, 61, 0.03);
+            color: var(--accent-color);
+            border: 1px solid rgba(181, 141, 61, 0.4);
+        }
+
         .val-highlight {
             font-family: 'Noto Serif TC', serif;
             color: var(--highlight-text);
@@ -192,7 +220,6 @@
             font-size: 0.85rem;
             color: var(--text-muted);
         }
-        /* 專門給卡片名稱次要說明(如無條件捨去)換行用的樣式 */
         .card-sub-name {
             display: block;
             font-size: 0.85em;
@@ -233,7 +260,7 @@
         /* 電腦版表頭 */
         .desktop-header {
             display: grid;
-            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            grid-template-columns: 2fr 2.5fr 1.5fr 1.5fr 1fr 1fr;
             gap: 15px;
             padding: 0 24px 15px 24px;
             font-size: 0.85rem;
@@ -335,12 +362,11 @@
             }
         };
 
-        // 將名稱中的括號部分利用 <br><span class="card-sub-name"> 進行優雅換行
         const cardData = [
             // 台新
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月 至9/30', isMain: false },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
-            { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼 至9/30', isMain: true },
+            { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(分開無條件捨去)</span>', condition: '1.5%+2.3% = 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼 至9/30', isMain: true },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
 
@@ -449,7 +475,8 @@
                     </div>
                     <div class="card-col">
                         <span class="mobile-label">條件</span>
-                        <span>${card.condition}</span>
+                        <!-- 將條件欄位改為精品標籤 Badge 樣式 -->
+                        <span class="condition-badge">${card.condition}</span>
                     </div>
                     <div class="card-col">
                         <span class="mobile-label">獲得點數</span>
