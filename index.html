@@ -334,7 +334,7 @@
         <ul>
             <li>預設僅顯示「重點推薦組合」，點擊右上角按鈕可查看各項加碼拆解明細。</li>
             <li>「獲得點數」支援 **分段計算邏輯** ：如標示為「相加」的回饋，系統會自動將各%數分開計算進位/捨去後再行加總，與銀行實際計算方式相符。</li>
-            <li>兌換門檻依各銀行官方規定為主（如：台新需滿10點、國泰需滿360點）。本系統顯示之「等值里數」為依比例換算之理論值，便於跨行比較。</li>
+            <li>兌換門檻依各銀行官方規定為主（如：台新需滿10點、國泰需滿360點）。本系統顯示之「等值哩數」為依比例換算之理論值，便於跨行比較。</li>
             <li>平均「元/哩」若顯示為「-」，代表消費金額過低，尚未達到獲得點數的最低門檻。</li>
             <li><a href="https://cardswitch.pages.dev/search" target="_blank">權益切換通網站</a></li>
         </ul>
@@ -366,7 +366,7 @@
             // 台新
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: '領券加碼 1.5%', rate: 0.015, roundType: 'floor', milesPerPoint: 1.8, limit: '500/月 至9/30', isMain: false },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: 'Line Pay 2.3%', rate: 0.023, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: false },
-            { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(分開無條件捨去)</span>', condition: '1.5%+2.3% = 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼 至9/30', isMain: true },
+            { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(分開無條件捨去)</span>', condition: 'Line Pay合計 3.8%', rate: 0.038, splitRates: [0.015, 0.023], roundType: 'floor', milesPerPoint: 1.8, limit: '含加碼 至9/30', isMain: true },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: '其餘權益 3.3%', rate: 0.033, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
             { bank: '台新', card: '太陽玫瑰<br><span class="card-sub-name">(無條件捨去)</span>', condition: 'Pay著刷 3.8%', rate: 0.038, roundType: 'floor', milesPerPoint: 1.8, limit: '無', isMain: true },
 
@@ -432,7 +432,7 @@
                         <div>卡別與規則</div>
                         <div>消費條件</div>
                         <div>獲得點數</div>
-                        <div>等值里數</div>
+                        <div>等值哩數</div>
                         <div>平均(元/哩)</div>
                         <div>備註</div>
                     `;
@@ -483,7 +483,7 @@
                         <span class="val-highlight">${points.toLocaleString()} 點</span>
                     </div>
                     <div class="card-col">
-                        <span class="mobile-label">等值里數</span>
+                        <span class="mobile-label">等值哩數</span>
                         <span class="val-highlight">${Math.floor(miles).toLocaleString()} 哩</span>
                     </div>
                     <div class="card-col">
